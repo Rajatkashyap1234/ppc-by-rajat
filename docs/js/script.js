@@ -1,64 +1,93 @@
-// ========================================
+// ==================================================
+// PPC BY RAJAT - GITHUB PAGES JAVASCRIPT
+// ==================================================
+
+
+// ==================================================
 // GLOBAL FORM TYPE
-// ========================================
+// ==================================================
 
 let formType = "book";
 
 
-// ========================================
+// ==================================================
 // OPEN LEAD FORM
-// ========================================
+// ==================================================
 
 function openLeadForm(type) {
 
     formType = type;
 
-    document.getElementById("leadModal").style.display = "flex";
+    const modal = document.getElementById("leadModal");
+
+    if (modal) {
+        modal.style.display = "flex";
+    }
+
 }
 
 
-// ========================================
+// ==================================================
 // CLOSE LEAD FORM
-// ========================================
+// ==================================================
 
 function closeLeadForm() {
 
-    document.getElementById("leadModal").style.display = "none";
+    const modal = document.getElementById("leadModal");
+
+    if (modal) {
+        modal.style.display = "none";
+    }
+
 }
 
 
-// ========================================
-// FORM SUBMIT
-// ========================================
+// ==================================================
+// LEAD FORM SUBMIT
+// ==================================================
 
-document
-    .getElementById("leadForm")
-    .addEventListener("submit", async function (event) {
+const leadForm = document.getElementById("leadForm");
+
+if (leadForm) {
+
+    leadForm.addEventListener("submit", function (event) {
 
         event.preventDefault();
 
 
-        const name =
-            document.getElementById("name")
-                .value
-                .trim();
+        // ==================================================
+        // GET FORM VALUES
+        // ==================================================
 
+        const nameElement =
+            document.getElementById("name");
+
+        const mobileElement =
+            document.getElementById("mobile");
+
+        const cityElement =
+            document.getElementById("city");
+
+
+        const name =
+            nameElement
+                ? nameElement.value.trim()
+                : "";
 
         const mobile =
-            document.getElementById("mobile")
-                .value
-                .trim();
-
+            mobileElement
+                ? mobileElement.value.trim()
+                : "";
 
         const city =
-            document.getElementById("city")
-                .value
-                .trim();
+            cityElement
+                ? cityElement.value.trim()
+                : "";
 
 
-        // ========================================
+        // ==================================================
         // VALIDATION
-        // ========================================
+        // ==================================================
 
         if (name.length < 2) {
 
@@ -86,9 +115,9 @@ document
         }
 
 
-        // ========================================
-        // CREATE REQUEST
-        // ========================================
+        // ==================================================
+        // LEAD DATA
+        // ==================================================
 
         const leadData = {
 
@@ -103,9 +132,38 @@ document
         };
 
 
-        // ========================================
+        // ==================================================
+        // GOOGLE TAG MANAGER / ANALYTICS DATA
+        // ==================================================
+
+        window.dataLayer = window.dataLayer || [];
+
+        window.dataLayer.push({
+
+            event: "lead_form_submit",
+
+            lead_form_type: formType,
+
+            lead_name: name,
+
+            lead_city: city
+
+        });
+
+
+        // ==================================================
+        // CONSOLE LOG
+        // ==================================================
+
+        console.log(
+            "PPC by Rajat Lead:",
+            leadData
+        );
+
+
+        // ==================================================
         // SUBMIT BUTTON
-        // ========================================
+        // ==================================================
 
         const submitButton =
             document.querySelector(
@@ -113,174 +171,180 @@ document
             );
 
 
-        submitButton.disabled = true;
+        if (submitButton) {
 
-        submitButton.innerText = "Submitting...";
+            submitButton.disabled = true;
 
-
-        try {
-
-
-            // ========================================
-            // SPRING BOOT API
-            // ========================================
-
-            const response = await fetch(
-                "/api/leads",
-                {
-
-                    method: "POST",
-
-                    headers: {
-
-                        "Content-Type":
-                            "application/json"
-
-                    },
-
-                    body:
-                        JSON.stringify(leadData)
-
-                }
-            );
-
-
-            const result =
-                await response.text();
-
-
-            console.log(
-                "Server response:",
-                result
-            );
-
-
-            // ========================================
-            // SUCCESS
-            // ========================================
-
-            if (response.ok) {
-
-                closeLeadForm();
-
-
-                // ====================================
-                // LET'S CONNECT
-                // ====================================
-
-                if (formType === "book") {
-
-                    window.location.href =
-                        "/thank-you.html";
-
-                }
-
-
-                // ====================================
-                // FREE CONSULTATION
-                // ====================================
-
-                else {
-
-                    document.getElementById(
-                        "thankYouText"
-                    ).innerText =
-                        "Thank you for your interest in PPC by Rajat. Our team will contact you shortly.";
-
-
-                    document.getElementById(
-                        "thankYouPopup"
-                    ).style.display = "flex";
-
-                }
-
-
-                // Clear form
-
-                document.getElementById(
-                    "leadForm"
-                ).reset();
-
-
-            } else {
-
-                alert(
-                    result ||
-                    "Unable to submit your details."
-                );
-
-            }
-
-
-        } catch (error) {
-
-            console.error(
-                "API Error:",
-                error
-            );
-
-
-            alert(
-                "Server connection failed. Please try again."
-            );
-
-
-        } finally {
-
-            submitButton.disabled = false;
-
-            submitButton.innerText = "Get Started";
+            submitButton.innerText =
+                "Submitted";
 
         }
 
+
+        // ==================================================
+        // CLOSE FORM
+        // ==================================================
+
+        closeLeadForm();
+
+
+        // ==================================================
+        // SUCCESS MESSAGE
+        // ==================================================
+
+        const thankYouText =
+            document.getElementById(
+                "thankYouText"
+            );
+
+
+        if (thankYouText) {
+
+            if (formType === "book") {
+
+                thankYouText.innerText =
+                    "Thank you for contacting PPC by Rajat. Our team will connect with you shortly.";
+
+            } else {
+
+                thankYouText.innerText =
+                    "Thank you for your interest in PPC by Rajat. Our team will contact you shortly.";
+
+            }
+
+        }
+
+
+        // ==================================================
+        // SHOW THANK YOU POPUP
+        // ==================================================
+
+        const thankYouPopup =
+            document.getElementById(
+                "thankYouPopup"
+            );
+
+
+        if (thankYouPopup) {
+
+            thankYouPopup.style.display =
+                "flex";
+
+        }
+
+
+        // ==================================================
+        // RESET FORM
+        // ==================================================
+
+        leadForm.reset();
+
+
+        // ==================================================
+        // RESTORE BUTTON
+        // ==================================================
+
+        setTimeout(function () {
+
+            if (submitButton) {
+
+                submitButton.disabled = false;
+
+                submitButton.innerText =
+                    "Get Started";
+
+            }
+
+        }, 1000);
+
     });
 
-
-// ========================================
-// CLOSE THANK YOU POPUP
-// ========================================
-
-function closeThankYou() {
-
-    document.getElementById(
-        "thankYouPopup"
-    ).style.display = "none";
 }
 
 
-// ========================================
-// WHATSAPP
-// ========================================
+// ==================================================
+// CLOSE THANK YOU POPUP
+// ==================================================
+
+function closeThankYou() {
+
+    const popup =
+        document.getElementById(
+            "thankYouPopup"
+        );
+
+
+    if (popup) {
+
+        popup.style.display =
+            "none";
+
+    }
+
+}
+
+
+// ==================================================
+// WHATSAPP MODAL
+// ==================================================
 
 function openWhatsApp() {
 
-    document.getElementById(
-        "whatsappModal"
-    ).style.display = "flex";
+    const modal =
+        document.getElementById(
+            "whatsappModal"
+        );
+
+
+    if (modal) {
+
+        modal.style.display =
+            "flex";
+
+    }
+
 }
 
 
 function closeWhatsApp() {
 
-    document.getElementById(
-        "whatsappModal"
-    ).style.display = "none";
+    const modal =
+        document.getElementById(
+            "whatsappModal"
+        );
+
+
+    if (modal) {
+
+        modal.style.display =
+            "none";
+
+    }
+
 }
 
 
-// ========================================
-// SEND WHATSAPP
-// ========================================
+// ==================================================
+// SEND WHATSAPP MESSAGE
+// ==================================================
 
 function sendWhatsApp() {
 
-    const message =
+    const messageElement =
         document.getElementById(
             "whatsappMessage"
-        )
-        .value
-        .trim();
+        );
 
+
+    const message =
+        messageElement
+            ? messageElement.value.trim()
+            : "";
+
+
+    // ==================================================
+    // VALIDATION
+    // ==================================================
 
     if (message === "") {
 
@@ -292,16 +356,17 @@ function sendWhatsApp() {
     }
 
 
-    // ========================================
-    // PPC BY RAJAT WHATSAPP NUMBER
-    // ========================================
-
-    // India country code + number
-    // No +, spaces or hyphens
+    // ==================================================
+    // WHATSAPP NUMBER
+    // ==================================================
 
     const whatsappNumber =
         "917015732776";
 
+
+    // ==================================================
+    // CREATE WHATSAPP URL
+    // ==================================================
 
     const whatsappURL =
         "https://wa.me/"
@@ -310,23 +375,180 @@ function sendWhatsApp() {
         + encodeURIComponent(message);
 
 
+    // ==================================================
+    // GTM EVENT
+    // ==================================================
+
+    window.dataLayer =
+        window.dataLayer || [];
+
+
+    window.dataLayer.push({
+
+        event: "whatsapp_click",
+
+        whatsapp_message:
+            message
+
+    });
+
+
+    // ==================================================
+    // OPEN WHATSAPP
+    // ==================================================
+
     window.open(
         whatsappURL,
         "_blank"
     );
 
 
+    // ==================================================
+    // CLOSE WHATSAPP MODAL
+    // ==================================================
+
     closeWhatsApp();
 
 
-    document.getElementById(
-        "thankYouText"
-    ).innerText =
-        "Thank you for contacting PPC by Rajat. We will connect with you shortly.";
+    // ==================================================
+    // THANK YOU POPUP
+    // ==================================================
+
+    const thankYouText =
+        document.getElementById(
+            "thankYouText"
+        );
 
 
-    document.getElementById(
-        "thankYouPopup"
-    ).style.display = "flex";
+    if (thankYouText) {
+
+        thankYouText.innerText =
+            "Thank you for contacting PPC by Rajat. We will connect with you shortly.";
+
+    }
+
+
+    const thankYouPopup =
+        document.getElementById(
+            "thankYouPopup"
+        );
+
+
+    if (thankYouPopup) {
+
+        thankYouPopup.style.display =
+            "flex";
+
+    }
 
 }
+
+
+// ==================================================
+// CALL BUTTON TRACKING
+// ==================================================
+
+function trackCallClick() {
+
+    window.dataLayer =
+        window.dataLayer || [];
+
+
+    window.dataLayer.push({
+
+        event: "call_click"
+
+    });
+
+}
+
+
+// ==================================================
+// GENERAL BUTTON TRACKING
+// ==================================================
+
+function trackButtonClick(buttonName) {
+
+    window.dataLayer =
+        window.dataLayer || [];
+
+
+    window.dataLayer.push({
+
+        event: "button_click",
+
+        button_name:
+            buttonName
+
+    });
+
+}
+
+
+// ==================================================
+// CLOSE MODALS WHEN CLICKING OUTSIDE
+// ==================================================
+
+window.addEventListener(
+    "click",
+    function (event) {
+
+        const leadModal =
+            document.getElementById(
+                "leadModal"
+            );
+
+        const whatsappModal =
+            document.getElementById(
+                "whatsappModal"
+            );
+
+
+        if (
+            event.target === leadModal
+        ) {
+
+            closeLeadForm();
+
+        }
+
+
+        if (
+            event.target === whatsappModal
+        ) {
+
+            closeWhatsApp();
+
+        }
+
+    }
+);
+
+
+// ==================================================
+// PAGE LOADED
+// ==================================================
+
+window.addEventListener(
+    "load",
+    function () {
+
+        console.log(
+            "PPC by Rajat website loaded successfully."
+        );
+
+
+        // GTM page load event
+
+        window.dataLayer =
+            window.dataLayer || [];
+
+
+        window.dataLayer.push({
+
+            event: "website_loaded"
+
+        });
+
+    }
+);
